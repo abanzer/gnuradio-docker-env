@@ -2,7 +2,7 @@
 
 This repository contains a quick and easy setup for GNU Radio (GR) development
 on a reproducible Docker-based environment. The configuration was tested on
-macOS Big Sur with Docker Desktop v3.4.0 on Apple Silicon (M1). However, it can
+Ubuntu 20.04 with Docker Desktop v3.4.0. However, it can
 easily be adapted to other platforms.
 
 The goal in this setup is to separate the roles of the host and the Docker
@@ -25,14 +25,14 @@ Next, prepare to run GUI applications inside the container (e.g., to run
 `gnuradio-companion`). Note there will be no X Server running in the
 container. Hence, the container will need to use the host's X Server.
 
-For example, on macOS, you can use the XQuartz application on the host to
+For example, on Ubuntu, you can use the XQuartz application on the host to
 display GUI applications running inside the container. To do so, first, you need
 to define the `DISPLAY` env var on the running container such that it points to
 the host's X server. You can test whether this works by running a GUI-based
 image such as `xeyes`. For example, run the following:
 
 ```
-docker run -e DISPLAY=host.docker.internal:0 gns3/xeyes
+docker run --net=host -e DISPLAY=:1 gns3/xeyes
 ```
 
 At this point, you will likely see `Error: Can't open display`. That's because
@@ -61,7 +61,7 @@ Now, rerun `xeyes`. It should open the GUI successfully.
 
 > If the GUI still fails, make sure that:
 >
-> 1. XQuartz (on macOS) is configured to allow connections from network clients
+> 1. XQuartz (on Ubuntu) is configured to allow connections from network clients
 >    (at `Preferences > Security`).
 >
 > 2. The container can ping the host. On Docker Mac, you can test with `ping
@@ -76,7 +76,7 @@ docker-compose up --build -d
 ```
 
 > NOTE: change the `DISPLAY` variable on `docker-compose.yml` if you are not
-> running on Docker Mac.
+> running on Docker Ubuntu.
 
 This compose stack creates three volumes:
 
@@ -121,9 +121,6 @@ make test
 make install
 ldconfig
 ```
-
-> Note: you may need to adjust the Docker resources. On macOS, access `Docker
-> Desktop > Preferences > Resources`.
 
 The given steps will install GR on the `gr_prefix` named volume mentioned
 earlier. Hence, the installation will persist across container sessions. That
