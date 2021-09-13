@@ -1,6 +1,6 @@
 FROM ubuntu:focal
 
-# Utilities and libraries
+# Utilities and libraries (GRC has a lot of dependencies)
 RUN apt update && \
 	DEBIAN_FRONTEND="noninteractive" apt install -y \
 	cmake \
@@ -13,23 +13,49 @@ RUN apt update && \
 	libgmp3-dev \
 	liblog4cpp5-dev \
 	libqwt-qt5-dev \
+	libsoapysdr-dev \
+	libsoapysdr0.7 \
+	libzmq3-dev \
+	libgsl-dev \
+	libiio-dev \
+	libad9361-dev \
+	libsoapysdr-dev \
+	soapysdr-tools \
+	libsndfile1-dev \
+	portaudio19-dev \
 	python3-click-plugins \
 	python3-distutils \
 	python3-gi-cairo \
 	python3-mako \
 	python3-numpy \
 	python3-pip \
-	python3-pyqt5 \
+	#python3-pyqt5 \
 	python3-pyqtgraph \
 	python3-scipy \
 	python3-yaml \
 	qtbase5-dev \
-	clang-format
+	clang-format \
+	pulseaudio \
+	vim \
+	socat \
+	gqrx-sdr \
+	wsjtx
 
 RUN apt install -y --no-install-recommends libuhd-dev
 
 # Pip dependencies
 RUN pip3 install "pybind11[global]" pygccxml
+RUN pip3 install pyzmq
+RUN pip3 install PyQt5==5.13.2
+RUN pip3 install pyserial
+
+# Add root user to group for pulseaudio access
+RUN adduser root pulse-access
+
+# Make folder, add GRC files, & move .asoundrc to home directory
+RUN mkdir GRC
+COPY Final* GRC/
+RUN cd GRC/ && mv .asoundrc ~/.asoundrc && cd ..
 
 # Volk
 RUN mkdir src/ && cd src/ && \
